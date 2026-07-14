@@ -10,7 +10,7 @@ ProcessList::~ProcessList()
 
 bool ProcessList::init()
 {
-	return false;
+    return scanForProcesses();
 }
 
 bool ProcessList::Refresh()
