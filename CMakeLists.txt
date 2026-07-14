@@ -15,13 +15,13 @@ add_library(imgui STATIC
     ${IMGUI_DIR}/imgui_demo.cpp
     ${IMGUI_DIR}/imgui_impl_dx11.cpp
     ${IMGUI_DIR}/imgui_impl_win32.cpp
-)
+ "src/LibInjectorApp.h" "src/LibInjectorApp.cpp" "src/Injector.h" "src/Injector.cpp" "src/HandleWrapper.h" "src/HandleWrapper.cpp")
 
 target_include_directories(imgui PUBLIC
     ${IMGUI_DIR}
 )
 
-add_executable(LibraryInjector src/main.cpp)
+add_executable(LibraryInjector src/main.cpp "src/LibInjectorApp.h" "src/LibInjectorApp.cpp" "src/Injector.h" "src/Injector.cpp" "src/HandleWrapper.h" "src/HandleWrapper.cpp")
 
 target_link_libraries(LibraryInjector PRIVATE imgui)
 

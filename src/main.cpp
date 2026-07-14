@@ -10,6 +10,8 @@
 #include <d3d11.h>
 #include <tchar.h>
 
+#include "LibInjectorApp.h"
+
 static ID3D11Device* g_pd3dDevice = nullptr;
 static ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain* g_pSwapChain = nullptr;
@@ -47,7 +49,7 @@ int main()
 		L"Dear ImGui DirectX11 Example", 
 		WS_OVERLAPPEDWINDOW, 
 		100, 100, 
-		(int)(1280 * main_scale), (int)(800 * main_scale), 
+		(int)(800 * main_scale), (int)(600 * main_scale), 
 		nullptr, nullptr, 
 		wc.hInstance, nullptr);
 
@@ -72,6 +74,7 @@ int main()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.IniFilename = nullptr; // stop imgui from generating a .ini file
 
 	ImGui::StyleColorsDark();
 
@@ -82,8 +85,23 @@ int main()
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	LibInjectorApp app{};
+
+	if (!app.Init())
+	{
+		std::cerr << std::format("app init failed") << std::endl;
+		ImGui_ImplDX11_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+
+		CleanupDeviceD3D();
+		::DestroyWindow(hwnd);
+		::UnregisterClassW(wc.lpszClassName, wc.hInstance);
+		return 0;
+	}
+
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	bool done = false;
 	while (!done)
 	{
@@ -124,8 +142,7 @@ int main()
 		ImGui::NewFrame();
 
 		{
-			ImGui::Begin("Hello, world!");
-			ImGui::End();
+			app.Render();
 		}
 
 		ImGui::Render();
