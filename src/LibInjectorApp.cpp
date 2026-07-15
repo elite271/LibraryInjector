@@ -1,5 +1,6 @@
 #include "LibInjectorApp.h"
 #include <iostream>
+#include <format>
 
 LibInjectorApp::LibInjectorApp()
 {
@@ -17,6 +18,12 @@ bool LibInjectorApp::Init()
 		return false;
 	}
 
+	if (!fileDialog.Init())
+	{
+		std::cerr << "File Dialog init failed" << std::endl;
+		return false;
+	}
+
 	return true;
 }
 
@@ -28,6 +35,32 @@ void LibInjectorApp::Render()
 
 	ImGui::Begin("Library Injector", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
+	if (ImGui::Button("Refresh"))
+	{
+		RefreshButtonPressed();
+		attachedProcess.reset();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Attach"))
+	{
+		if (selectedProcess)
+		{
+			attachedProcess.emplace(*selectedProcess);
+		}
+	}
+
+	if (ImGui::Button("Open"))
+	{
+		fileDialog.Show();
+	}
+	ImGui::Text("Selected file: ", fileDialog.GetSelectedPath());
+
+	if (selectedProcess)
+	{
+		ImGui::Text("Selected Process: ", selectedProcess->currentProcessName.c_str());
+	}
 
 	// float listbox_height = ImGui::GetContentRegionAvail().y - 30.0f;
 	// if (ImGui::BeginListBox("##Processes", ImVec2(-FLT_MIN, listbox_height)))
@@ -45,7 +78,6 @@ void LibInjectorApp::Render()
 				OnListSelect();
 			}
 
-			// Set the initial focus when opening the combo (scrolling to the item)
 			if (is_selected)
 			{
 				ImGui::SetItemDefaultFocus();
@@ -56,12 +88,19 @@ void LibInjectorApp::Render()
 	}
 
 
-
-
 	ImGui::End();
 }
 
 void LibInjectorApp::OnListSelect()
 {
 	this->selectedProcess = std::make_unique<Proc>(list.at(selected_index));
+}
+
+bool LibInjectorApp::RefreshButtonPressed()
+{
+	selected_index = -1;
+
+	selectedProcess.reset();
+
+	return list.Refresh();
 }

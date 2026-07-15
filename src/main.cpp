@@ -46,7 +46,7 @@ int main()
 
 	HWND hwnd = ::CreateWindowW(
 		wc.lpszClassName, 
-		L"Dear ImGui DirectX11 Example", 
+		L"LibraryInjector", 
 		WS_OVERLAPPEDWINDOW, 
 		100, 100, 
 		(int)(800 * main_scale), (int)(600 * main_scale), 

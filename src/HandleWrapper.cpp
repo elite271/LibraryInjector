@@ -46,7 +46,10 @@ HandleWrapper& HandleWrapper::operator=(HandleWrapper&& other) noexcept
 
 HandleWrapper::~HandleWrapper()
 {
-	CloseHandle(processHandle);
+	if (processHandle != nullptr)
+	{
+		CloseHandle(processHandle);
+	}
 }
 
 HANDLE HandleWrapper::GetHandle() const
