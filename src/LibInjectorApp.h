@@ -7,6 +7,7 @@
 #include "ProcessList.h"
 #include "HandleWrapper.h"
 #include "FileDialog.h"
+#include "Injector.h"
 
 class LibInjectorApp
 {
@@ -22,6 +23,7 @@ public:
 private:
 	ProcessList list{};
 	FileDialog fileDialog{};
+	Injector injector{};
 
 	int selected_index = -1;
 

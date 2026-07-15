@@ -43,14 +43,6 @@ void LibInjectorApp::Render()
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Attach"))
-	{
-		if (selectedProcess)
-		{
-			attachedProcess.emplace(*selectedProcess);
-		}
-	}
-
 	if (ImGui::Button("Open"))
 	{
 		fileDialog.Show();
@@ -60,6 +52,25 @@ void LibInjectorApp::Render()
 	if (selectedProcess)
 	{
 		ImGui::Text("Selected Process: ", selectedProcess->currentProcessName.c_str());
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Inject"))
+	{
+		HANDLE handle = nullptr;
+
+		if (this->attachedProcess.has_value())
+		{
+			handle = this->attachedProcess->GetHandle();
+		}
+
+		auto path = fileDialog.GetSelectedPath().c_str();
+
+		if (handle && path)
+		{
+			injector.InjectDLL(handle, path);
+		}
 	}
 
 	// float listbox_height = ImGui::GetContentRegionAvail().y - 30.0f;
@@ -94,6 +105,11 @@ void LibInjectorApp::Render()
 void LibInjectorApp::OnListSelect()
 {
 	this->selectedProcess = std::make_unique<Proc>(list.at(selected_index));
+
+	if (selectedProcess)
+	{
+		attachedProcess.emplace(*selectedProcess);
+	}
 }
 
 bool LibInjectorApp::RefreshButtonPressed()

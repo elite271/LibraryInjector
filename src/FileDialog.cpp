@@ -48,7 +48,8 @@ void FileDialog::Show()
 
                 if (SUCCEEDED(hr))
                 {
-                    this->selectedPath = pszFilePath;
+                    this->selectedPath = NormalizePath(pszFilePath);
+                    //std::wcout << selectedPath << std::endl;
                 }
             }
         }

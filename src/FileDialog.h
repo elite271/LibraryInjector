@@ -3,7 +3,15 @@
 #include <windows.h>
 #include <shobjidl.h>
 #include <iostream>
+#include <algorithm>
+#include <string>
 
+
+inline std::wstring NormalizePath(std::wstring path)
+{
+	std::replace(path.begin(), path.end(), L'\\', L'/');
+	return path;
+}
 
 class FileDialog
 {
