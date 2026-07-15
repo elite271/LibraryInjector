@@ -35,47 +35,17 @@ void LibInjectorApp::Render()
 
 	ImGui::Begin("Library Injector", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
+	ImGui::BeginChild("ProcList", ImVec2(300, 0), true);
+
 	if (ImGui::Button("Refresh"))
 	{
 		RefreshButtonPressed();
 		attachedProcess.reset();
 	}
 
-	ImGui::SameLine();
-
-	if (ImGui::Button("Open"))
-	{
-		fileDialog.Show();
-	}
-	ImGui::Text("Selected file: ", fileDialog.GetSelectedPath());
-
-	if (selectedProcess)
-	{
-		ImGui::Text("Selected Process: ", selectedProcess->currentProcessName.c_str());
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Inject"))
-	{
-		HANDLE handle = nullptr;
-
-		if (this->attachedProcess.has_value())
-		{
-			handle = this->attachedProcess->GetHandle();
-		}
-
-		auto path = fileDialog.GetSelectedPath().c_str();
-
-		if (handle && path)
-		{
-			injector.InjectDLL(handle, path);
-		}
-	}
-
 	// float listbox_height = ImGui::GetContentRegionAvail().y - 30.0f;
 	// if (ImGui::BeginListBox("##Processes", ImVec2(-FLT_MIN, listbox_height)))
-	if (ImGui::BeginListBox("##Processes"))
+	if (ImGui::BeginListBox("##Processes", ImVec2(-FLT_MIN, -FLT_MIN)))
 	{
 		for (auto i = 0u; i < list.size(); ++i)
 		{
@@ -98,6 +68,41 @@ void LibInjectorApp::Render()
 		ImGui::EndListBox();
 	}
 
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+
+	ImGui::BeginChild("InjectorControls", ImVec2(0, 0), true);
+
+	if (ImGui::Button("Open"))
+	{
+		fileDialog.Show();
+	}
+	ImGui::Text("Selected file: %ls", fileDialog.GetSelectedPath().c_str());
+
+	if (selectedProcess)
+	{
+		ImGui::Text("Selected Process: %s", selectedProcess->currentProcessName.c_str());
+	}
+	else
+	{
+		ImGui::TextDisabled("No Process");
+	}
+
+	bool CanInject = attachedProcess.has_value() && !fileDialog.GetSelectedPath().empty();
+
+	ImGui::BeginDisabled(!CanInject);
+
+	if (ImGui::Button("Inject"))
+	{
+		HANDLE handle = this->attachedProcess->GetHandle();
+		
+		injector.InjectDLL(handle, fileDialog.GetSelectedPath().c_str());
+	}
+
+	ImGui::EndDisabled();
+
+	ImGui::EndChild();
 
 	ImGui::End();
 }
