@@ -29,4 +29,6 @@ private:
 
 	std::unique_ptr<Proc> selectedProcess;
 	std::optional<HandleWrapper> attachedProcess;
+
+	bool success = false;
 };

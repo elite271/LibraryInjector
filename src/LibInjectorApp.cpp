@@ -97,8 +97,14 @@ void LibInjectorApp::Render()
 	{
 		HANDLE handle = this->attachedProcess->GetHandle();
 		
-		injector.InjectDLL(handle, fileDialog.GetSelectedPath().c_str());
+		success = injector.InjectDLL(handle, fileDialog.GetSelectedPath().c_str());
 	}
+
+	if (success)
+	{
+		ImGui::Text("DLL successfully injected.");
+	}
+
 
 	ImGui::EndDisabled();
 
